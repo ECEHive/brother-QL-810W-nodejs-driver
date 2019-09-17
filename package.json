@@ -2,7 +2,7 @@
   "name": "brother-ql-810w-escpos",
   "version": "1.0.0",
   "description": "NodeJS Support Module for Brother QL-810 series label printer",
-  "main": "index.js",
+  "main": "dist/brother-ql-810w.js",
   "scripts": {
     "build": "npm run build:ts",
     "build:ts":"tsc",

@@ -61,17 +61,22 @@ var ESCPOSLabelPrinter = /** @class */ (function () {
     };
     ESCPOSLabelPrinter.prototype.code39 = function (text) {
         text = text.replace('\\', '');
-        this.buffer.push(ESCAPE, 0x69);
-        this.addText('t0r1h');
-        this.buffer.push(0, 100);
-        this.addText('w1');
+        this.buffer.push(ESCAPE, 'i');
+        this.addText('t1h');
+        this.buffer.push(100, 0);
+        this.buffer.push('B');
         this.addText(text);
         this.addText('?\\');
     };
     ESCPOSLabelPrinter.prototype.encode = function () {
         var rtnVal = new Uint8Array(this.buffer.length);
         this.buffer.forEach(function (val, idx) {
-            rtnVal[idx] = val;
+            if ((typeof val) === 'string') {
+                rtnVal[idx] = val.charCodeAt(0);
+            }
+            else {
+                rtnVal[idx] = val;
+            }
         });
         return rtnVal;
     };

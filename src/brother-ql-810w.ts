@@ -1,7 +1,6 @@
 const ESCAPE = 0x1b
-
 export default class ESCPOSLabelPrinter {
-  buffer: Array<number> = []
+  buffer: Array<number | string> = []
   static Alignment = {
     LEFT: 0,
     CENTER: 1,
@@ -82,16 +81,16 @@ export default class ESCPOSLabelPrinter {
     this.buffer.push(
       ...text.split('').map((chr: string) => {
         return chr.charCodeAt(0)
-      })
+      }),
     )
   }
 
   code39(text: string) {
     text = text.replace('\\', '')
-    this.buffer.push(ESCAPE, 0x69)
-    this.addText('t0r1h')
-    this.buffer.push(0,100)
-    this.addText('w1')
+    this.buffer.push(ESCAPE, 'i')
+    this.addText('t1h')
+    this.buffer.push(100,0)
+    this.buffer.push('B')
     this.addText(text)
     this.addText('?\\')
   }
@@ -99,9 +98,17 @@ export default class ESCPOSLabelPrinter {
   encode(): Uint8Array {
     const rtnVal = new Uint8Array(this.buffer.length)
     this.buffer.forEach((val, idx) => {
-      rtnVal[idx] = val
+      if ((typeof val) === 'string') {
+        rtnVal[idx] = (val as string).charCodeAt(0)
+      } else {
+        rtnVal[idx] = val as number
+      }
     })
     return rtnVal
+  }
+
+  setLineFeed(dots5: number) {
+    this.buffer.push(ESCAPE, 'A', dots5 & 0xFF)
   }
 
   setLength(dots: number) {
