@@ -16,6 +16,7 @@ export default class ESCPOSLabelPrinter {
     Helsinki: 3,
     SanDiego: 4,
     LetterGothic: 9,
+    HelsinkiP: 11,
   }
 
   constructor() {
@@ -57,7 +58,7 @@ export default class ESCPOSLabelPrinter {
 
   setSize(fontSize: number) {
     const sizeLo = fontSize & 0xFF
-    const sizeHi = (fontSize >> 2) & 0xFF
+    const sizeHi = (fontSize >> 8) & 0xFF
     this.buffer.push(ESCAPE, 0x58, 0, sizeLo, sizeHi)
   }
 
@@ -103,8 +104,20 @@ export default class ESCPOSLabelPrinter {
     return rtnVal
   }
 
+  setLength(dots: number) {
+    this.buffer.push(ESCAPE, 0x28, 0x43, 0x02, 0x00, dots & 0xFF, (dots >> 8) & 0xFF)
+  }
+
+  setHorizontalPosition(dots: number) {
+    this.buffer.push(ESCAPE, 0x24, dots & 0xFF, (dots >> 8) & 0xFF)
+  }
+
+  setVerticalPosition(dots: number) {
+    this.buffer.push(ESCAPE, 0x28, 0x56, 0x02, 0x0, 0xFF & dots, (dots >> 8) & 0xFF)
+  }
+
   initialize(): ESCPOSLabelPrinter {
-    this.buffer.push(...[0x1b, 0x40])
+    this.buffer.push(0x1b, 0x40)
     return this
   }
 }

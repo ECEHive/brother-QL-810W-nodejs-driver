@@ -38,7 +38,7 @@ var ESCPOSLabelPrinter = /** @class */ (function () {
     };
     ESCPOSLabelPrinter.prototype.setSize = function (fontSize) {
         var sizeLo = fontSize & 0xFF;
-        var sizeHi = (fontSize >> 2) & 0xFF;
+        var sizeHi = (fontSize >> 8) & 0xFF;
         this.buffer.push(ESCAPE, 0x58, 0, sizeLo, sizeHi);
     };
     ESCPOSLabelPrinter.prototype.print = function () {
@@ -75,9 +75,17 @@ var ESCPOSLabelPrinter = /** @class */ (function () {
         });
         return rtnVal;
     };
+    ESCPOSLabelPrinter.prototype.setLength = function (dots) {
+        this.buffer.push(ESCAPE, 0x28, 0x43, 0x02, 0x00, dots & 0xFF, (dots >> 8) & 0xFF);
+    };
+    ESCPOSLabelPrinter.prototype.setHorizontalPosition = function (dots) {
+        this.buffer.push(ESCAPE, 0x24, dots & 0xFF, (dots >> 8) & 0xFF);
+    };
+    ESCPOSLabelPrinter.prototype.setVerticalPosition = function (dots) {
+        this.buffer.push(ESCAPE, 0x28, 0x56, 0x02, 0x0, 0xFF & dots, (dots >> 8) & 0xFF);
+    };
     ESCPOSLabelPrinter.prototype.initialize = function () {
-        var _a;
-        (_a = this.buffer).push.apply(_a, [0x1b, 0x40]);
+        this.buffer.push(0x1b, 0x40);
         return this;
     };
     ESCPOSLabelPrinter.Alignment = {
@@ -93,6 +101,7 @@ var ESCPOSLabelPrinter = /** @class */ (function () {
         Helsinki: 3,
         SanDiego: 4,
         LetterGothic: 9,
+        HelsinkiP: 11,
     };
     return ESCPOSLabelPrinter;
 }());
